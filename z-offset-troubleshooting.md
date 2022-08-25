@@ -1,24 +1,23 @@
-QGL Debug
-#Printer Info#
-[Voron 2.4r2 300mm x 300mm (LDO Motors Kit)](https://www.fabreeko.com/collections/v2-4/products/ldo-voron-v2-4-kit)
-[Afterburner Toolhead](https://github.com/VoronDesign/Voron-Afterburner)
-[Klicky NG probe](https://github.com/jlas1/Klicky-Probe/tree/main/Probes/KlickyNG)
-[Kinematic Bed Mount](https://github.com/tanaes/whopping_Voron_mods/tree/main/kinematic_bed)
-[Honeybadger PEI Build Plate](https://www.fabreeko.com/collections/fabreeko/products/honeybadger-v2-4-single-sided-black-pei-textured)
-[Bondtech LGX Lite Extruder](https://www.bondtech.se/product/lgx-lite-extruder-no-motor/)
-[LDO 20mm Pancake Extruder motor](https://www.bondtech.se/product/ldo-nema14-round-20mm-pancake-motor/)
-PIF Provided functional parts
+## Printer Info
+- [Voron 2.4r2 300mm x 300mm (LDO Motors Kit)](https://www.fabreeko.com/collections/v2-4/products/ldo-voron-v2-4-kit)
+- [Afterburner Toolhead](https://github.com/VoronDesign/Voron-Afterburner)
+- [Klicky NG probe](https://github.com/jlas1/Klicky-Probe/tree/main/Probes/KlickyNG)
+- [Kinematic Bed Mount](https://github.com/tanaes/whopping_Voron_mods/tree/main/kinematic_bed)
+- [Honeybadger PEI Build Plate](https://www.fabreeko.com/collections/fabreeko/products/honeybadger-v2-4-single-sided-black-pei-textured)
+- [Bondtech LGX Lite Extruder](https://www.bondtech.se/product/lgx-lite-extruder-no-motor/)
+- [LDO 20mm Pancake Extruder motor](https://www.bondtech.se/product/ldo-nema14-round-20mm-pancake-motor/)
+- PIF Provided functional parts
 
 
-# 1.0 Determing position_endstop drift between prints#
-##Problem statement:##
+## 1.0 Determing position_endstop drift between prints
+### Problem statement:
 When probing the bed with Klicky when the printer is hot I recieve "probe inaccuracy" like messages meaning that the
 distance measured by the probe to the bed is steadily increasing (for example 1.1 => 1.2 => 1.4) or the margin of error in the readings is too high (for example: 1.1 => 2.0 => 1.0 => 1.4). 
 
-##Hypothesis:##
+### Hypothesis:
 When performing *movement* of the gantry some component within the motion system becomes loose impacting the z motion system which is impacting klicky probe readings. 
 
-##Procedure:##
+### Procedure:
 This first experiment runs qgl procedures *cold*, observing if there are any "retry" errors. Run this procedure 10 times, if there is not a significant amount of retries then move on to the next experiment.
 I think for this test 2 individual retries is acceptable.
 
@@ -36,7 +35,7 @@ gcode:
   M118 Finished...
 ```
 
-##Results:##
+### Results:
 There were a total of 7 `probe samples exceed samples_tolerance` within 7 runs before QGL gives up and throws an exception. We were not able to get a full set of 10 QGL runs.
  
 3 Probes per corner, order of corner probing:
@@ -607,23 +606,22 @@ probe: TRIGGERED
 20:41:20
 QG Level
 ```
-##Conclusion:##
+### Conclusion:
 During run 7 I heard a "crackle" when moving in the Z direction on corner 1. I suspect there is a broken bearing, plastic part or something! Once that crackle was heard there was an increase in probe retries.
 
 
-#2.0 Determing position_endstop drift between qgl and firmware restarts#
+## 2.0 Determing position_endstop drift between qgl and firmware restarts#
 
-##Problem statement:##
+### Problem statement:
 When probing the bed with Klicky when the printer is hot I recieve "probe inaccuracy" like messages meaning that the
 distance measured by the probe to the bed is steadily increasing (for example 1.1 => 1.2 => 1.4) or the margin of error in the readings is too high (for example: 1.1 => 2.0 => 1.0 => 1.4). 
 
-##Hypothesis:##
+### Hypothesis:
 When performing *movement* of the gantry some component within the motion system becomes loose impacting the z motion system which is impacting klicky probe readings. 
 
-##Procedure:##
+### Procedure:
 This experiment runs homing/qgl procedures *cold* and then requires me to test the z-offset using the traditional paper test. While moving a piece of paper underneath the nozzle I adjust the z-offset using the mainsail UI until I feel the first hint of resistance between
 the nozzle and paper. That z-offset value is then saved to the endstop and the firmware is restarted.
-
 
 [gcode_macro ESRUN]
 gcode:
@@ -638,42 +636,62 @@ gcode:
   M118 Save Z-Offset to Endstop (SAVE_CONFIG)
 
 ##Results:##
-###Run #1###
-```stepper_z: position_endstop: 1.420```
 
-###Run #2###
-```stepper_z: position_endstop: 1.395```
+```
+Run #1
+stepper_z: position_endstop: 1.420
+```
 
-###Run #3###
-```stepper_z: position_endstop: 1.395```
+```
+Run #2
+stepper_z: position_endstop: 1.395
+```
 
-###Run #4###
-```stepper_z: position_endstop: 1.405```
+```
+Run #3
+stepper_z: position_endstop: 1.395
+```
 
-###Run #5###
-```stepper_z: position_endstop: 1.415```
+```
+Run #4
+stepper_z: position_endstop: 1.405
+```
 
-###Run #6###
-```stepper_z: position_endstop: 1.425```
+```
+Run #5
+stepper_z: position_endstop: 1.415
+```
 
-###Run #7###
-```stepper_z: position_endstop: 1.425```
+```
+Run #6
+stepper_z: position_endstop: 1.425
+```
 
-###Run #8###
-```stepper_z: position_endstop: 1.425```
+```
+Run #7
+stepper_z: position_endstop: 1.425
+```
 
+```
+Run #8
+stepper_z: position_endstop: 1.425
+```
 
-###Run #9###
-```stepper_z: position_endstop: 1.425```
+```
+Run #9
+stepper_z: position_endstop: 1.425
+```
 
-###Run #10###
-```stepper_z: position_endstop: 1.425```
+```
+Run #10
+stepper_z: position_endstop: 1.425
+```
 
-##Conclusion:##
+### Conclusion:
 As the results show there was no significant difference detected in position_endstop values while running the home/qgl/home paper-test *cold*
 
 
-# 3.0 Try to figure out what that noise was
+## 3.0 Try to figure out what that noise was
 During experiment number 1 there was a "crackle" noise observed in corner 1 and an increase in failed probe measurements. My intiuition is that that sound is associated with a mechanical failure or friction that is throwing off z motion when performing readings.  To help force the issue I have written a macro to lower and raise the gantry in the Z direction n times which should keep the gantry moving while I inspect the machine.
 
 ```
@@ -689,19 +707,19 @@ gcode:
   M118 Finished...
 ```
 
-Hypothesis:
+### Hypothesis:
 There is a bearing that is not lubricated or there is a plastic part thats crack that is providing for inconsistent movement in the z-axis.
 
 
 
-##Results:##
+### Results:
 After running `ZCHAOS` for a few iterations I confirmed that the noise was coming from corner 2 of the printer.  My intuition was that the hole that holds the screw on the Z idler was cracked. 
 - Upon inspection all plastic parts were intact.
 - I removed the Z belt from that corner with the z joint and gantry assembly intact and there was still a noise.
 - I removed the Z motor from that corner and there was still a noise.
 - I unscrewed the m5 screw holding the z joint and linear bearing to the gantry and the noise dissappeared.
 
-Base on the info above I had a gut feeling that there was something wrong with the linear bearing. I removed the bearing, and lubricated it.  I re-ran `ZCHAOS` once and there was still a noise! I re-ran the `ZCHAOS` for 5 more iteration and the noise subsided. Once the noise went away I re-ran `ZCHAOS` for a total of 10 more times and got way more accurate results with a few probe failures but no total `QGL` failures. 
+Based on the info above I had a gut feeling that there was something wrong with the linear bearing. I removed the bearing, and lubricated it.  I re-ran `ZCHAOS` once and there was still a noise! I re-ran the `ZCHAOS` for 5 more iteration and the noise subsided. Once the noise went away I re-ran `ZCHAOS` for a total of 10 more times and got way more accurate results with a few probe failures but no total `QGL` failures. 
 
 ```
 22:30:43
@@ -1652,5 +1670,5 @@ echo: Performing QGL obsevation procedure 7 times....
 QRUN TEST_COUNT=7
 ```
 
-#Conclusion
+### Conclusion
 Greasing the linear bearing in the corner that had the most probe failures removed `QGL` failures during the test. There were 8 probe failures in 10 `QGL` runs as compared to 7 probe failures in 7 `QGL` runs  and zero total `QGL` failures. I suspect that lubricating the other 3 linear rails will impact readings in a positive way.
